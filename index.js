@@ -27,6 +27,7 @@ async function run(){
             res.send(products);
         });
 
+        // Insert Product =====================================================
         app.post('/product', async(req, res)=>{
             const newProduct = req.body;
             console.log('adding new product');
@@ -34,9 +35,75 @@ async function run(){
             res.send(result);
         })
 
+        // Delete Product =====================================================
+        app.delete('/product/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id:ObjectId(id)};
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+
+        } )
+        // Display Update a Product =============================
+        app.get('/edit/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = productCollection.findOne(query);
+            res.send(result);
+        })
+
+        // Update a Product =============================
+        app.put('/product/:id', async(req,res) =>{
+            const id = req.params.id;
+            const editedProduct = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set:{
+                    name: editedProduct.name,
+                    img: editedProduct.img,
+                    description: editedProduct.description,
+                    quantity: editedProduct.quantity,
+                    supplier: editedProduct.supplier,
+                    email: editedProduct.email
+                }
+            }
+            const result = await productCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        })
+
+        // Delivery a Product==================================
+        // app.patch('/product/:id', async(req, res) =>{
+        //     const id = req.params.id;
+        //     const delivered = req.body;
+        //     console.log('delivered');
+        //     const filter = {_id: ObjectId(id)};
+        //     const options = { upsert: true };
+        //     const updatedDoc = {
+        //         $set:{
+        //             quantity: delivered.quantity
+        //         },
+        //     }
+        //     const result = await productCollection.updateOne(filter, updatedDoc, options);
+        //     res.send(result);
+        // })
+        app.patch('/product/:id', async(req,res)=>{
+            const id = req.params.id;
+            const updateData = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    quantity: updateData.quantity
+                },
+            }
+            const result = await productCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        });
+
+
         app.get('/product/:id', async(req,res)=>{
             const id = req.params.id;
-            const query = {_id: ObjectId};
+            const query = {_id: ObjectId(id)};
             const product = await productCollection.findOne(query);
             res.send(product);
         })
