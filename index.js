@@ -30,7 +30,7 @@ async function run(){
         // Insert Product =====================================================
         app.post('/product', async(req, res)=>{
             const newProduct = req.body;
-            console.log('adding new product');
+            // console.log('adding new product');
             const result = await productCollection.insertOne(newProduct);
             res.send(result);
         })
@@ -72,20 +72,6 @@ async function run(){
         })
 
         // Delivery a Product==================================
-        // app.patch('/product/:id', async(req, res) =>{
-        //     const id = req.params.id;
-        //     const delivered = req.body;
-        //     console.log('delivered');
-        //     const filter = {_id: ObjectId(id)};
-        //     const options = { upsert: true };
-        //     const updatedDoc = {
-        //         $set:{
-        //             quantity: delivered.quantity
-        //         },
-        //     }
-        //     const result = await productCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        // })
         app.patch('/product/:id', async(req,res)=>{
             const id = req.params.id;
             const updateData = req.body;
@@ -106,6 +92,15 @@ async function run(){
             const query = {_id: ObjectId(id)};
             const product = await productCollection.findOne(query);
             res.send(product);
+        })
+// My Items=============================================
+        app.get('/my-items', async(req, res) => {
+            const email = req.query.email;
+            // console.log(email);
+            const query = {email: email};
+            const cursor = productCollection.find(query);
+            const myItems = await cursor.toArray();
+            res.send(myItems);
         })
     }
     finally{
