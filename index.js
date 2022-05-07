@@ -102,6 +102,15 @@ async function run(){
             const myItems = await cursor.toArray();
             res.send(myItems);
         })
+
+     // Delete Product on My Item =====================================================
+     app.delete('/my-items/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {_id:ObjectId(id)};
+        const result = await productCollection.deleteOne(query);
+        res.send(result);
+
+    } )
     }
     finally{
 
